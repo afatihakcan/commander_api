@@ -1,0 +1,14 @@
+{
+  "cam": {
+    "exec": "rosrun simple_apps camera.py",
+    "cmd": "python3 /home/fatih/catkin_ws/src/simple_apps/scripts/camera.py"
+  },
+  "test": {
+    "exec": "python3 /home/fatih/WEB/garbage.py",
+    "cmd": "python3 /home/fatih/WEB/garbage.py"
+  },
+  "kcalc": {
+    "exec": "/usr/bin/kcalc",
+    "cmd": "/usr/bin/kcalc"
+  }
+}
