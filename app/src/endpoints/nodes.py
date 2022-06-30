@@ -36,6 +36,7 @@ NodeList = {}
 CmdList = CmdDb()
 CmdList.read_cmd()
 
+
 def check_if_running():
     for node_name in NodeList:
         cmd_check = getattr(NodeList[f'{node_name}'], 'check_if_exist')
@@ -55,10 +56,12 @@ create_node_list()
 @router_cmd.get("/")
 async def get_all_nodes():
     check_if_running()
-    ret = dict()
+    #ret = dict()
+    ret = []
     for idx, node_name in enumerate(NodeList ):
         cmd_info = getattr(NodeList[f'{node_name}'], 'info')
-        ret.update({f'{idx+1}':cmd_info()})
+        #ret.update({f'{idx+1}':cmd_info()})
+        ret.append(cmd_info())
     return ret
         
 @router_cmd.get("/{node}/")
@@ -73,17 +76,25 @@ async def node_controller(node:str, action:Union[str,None]=None):
             if(NodeList[f'{node}'].is_running and action=='start'):
                 postfix = 'already running!'
             elif(not NodeList[f'{node}'].is_running and action=='kill'):
-                postfix = 'not yet started!'
+                postfix = 'not yet started!' 
             else:
-                postfix = 'successful!'
+                # postfix = 'successful!' 
+                if action=='start':
+                    postfix = 'started!'
+                elif action=='kill':
+                    postfix = 'killed!'
+                else:
+                    # raise HTTPException(status_code=404, detail="there is no action like this")
+                    raise Exception('no such action')
                 
             cmd_action = getattr(NodeList[f'{node}'], f'{action}')
             cmd_action()
             cmd_info = getattr(NodeList[f'{node}'], 'info')
             ret = cmd_info()
-            ret.update({'status':postfix})
+            ret.update({'response':postfix})
             return ret
-    except:
+    except Exception as e:
+        print(e)
         raise HTTPException(status_code=404, detail="Node or action doesn't exist!")
     
 

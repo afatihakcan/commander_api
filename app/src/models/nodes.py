@@ -66,7 +66,8 @@ class Node:
             
     def info(self):
         ret_info = {'name':self.name, 
-                'running':self.is_running}
+                'status':self.is_running,
+                'pid':None}
         if self.is_running:
             ret_info.update({'pid':self.pid})
         return ret_info
