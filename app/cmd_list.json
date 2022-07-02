@@ -1,1 +1,1 @@
-{"cam": {"exec": "rosrun simple_apps camera.py", "cmd": "python3 /home/fatih/catkin_ws/src/simple_apps/scripts/camera.py"}, "kcalc": {"exec": "/usr/bin/kcalc", "cmd": "/usr/bin/kcalc"}, "todo": {"exec": "/usr/bin/gnome-todo", "cmd": "/usr/bin/gnome-todo"}}
+{"kcalc": {"exec": "/usr/bin/kcalc", "cmd": "/usr/bin/kcalc"}, "sudoku": {"exec": "/usr/games/gnome-sudoku", "cmd": "/usr/games/gnome-sudoku"}}

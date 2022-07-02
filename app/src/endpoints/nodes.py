@@ -93,8 +93,12 @@ async def node_controller(node:str, action:Union[str,None]=None):
             ret = cmd_info()
             ret.update({'response':postfix})
             return ret
+    except FileNotFoundError:
+        cmd_info = getattr(NodeList[f'{node}'], 'info')
+        ret = cmd_info()
+        ret.update({'response':'Not Found!'})
+        return ret
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=404, detail="Node or action doesn't exist!")
     
 
@@ -110,6 +114,15 @@ async def add_to_list(item:CmdItem):
     return {'status':'successful!', 
             'added':item.dict()}
     
+@router_list.post('/add_multiple/')
+async def add_to_list_multiple(new_items:List[CmdItem]):
+    for item in new_items:
+        CmdList.add_cmd({f'{item.name}':{'exec':item.exec, 'cmd':item.cmd}})
+        NodeList.update({f'{item.name}':Node(item)})
+    return {'status':'successful!', 
+            'added':new_items.dict()}
+
+    
 @router_list.post('/update/')
 async def update_list(new_list:List[CmdItem]):
     new_dict = dict()
@@ -120,4 +133,5 @@ async def update_list(new_list:List[CmdItem]):
     
     NodeList.clear()
     create_node_list()
-    return {'status':'successful!', 'cmdList':CmdList.cmd_list}
+    # return {'status':'successful!', 'cmdList':CmdList.cmd_list}
+    return CmdList.cmd_list
