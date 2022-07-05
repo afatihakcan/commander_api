@@ -17,13 +17,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 from fastapi import Depends, FastAPI
-from src.endpoints import nodes
+from src.endpoints import nodes, search
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 app.include_router(nodes.router_cmd)
 app.include_router(nodes.router_list)
+app.include_router(search.router)
 
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"],

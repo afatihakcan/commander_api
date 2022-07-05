@@ -24,38 +24,40 @@ from .cmdList import CmdDb, CmdItem
 
 
 class Node:
-    def __init__(self, item:CmdItem):
+    def __init__(self, item: CmdItem, process=None, pid=None, check_flag=True):
         self.is_running = False
         self.name = item.name
         self.exec = item.exec
         self.cmd = item.cmd
-        self.process = None
-        self.pid = None
+        self.process = process
+        self.pid = pid
         self.db = CmdDb()
-        self.check_if_exist()
-        
+        if check_flag:
+            self.check_if_exist()
+
     def check_if_exist(self):
         cmd_list = self.db.read_cmd()
         for proc in psutil.process_iter():
-            if proc.as_dict(attrs=['cmdline'])['cmdline']==shlex.split(self.cmd):
+            if proc.as_dict(attrs=['cmdline'])['cmdline'] == shlex.split(self.cmd):
                 self.pid = proc.as_dict(attrs=['pid'])['pid']
                 self.process = psutil.Process(self.pid)
-                self.is_running=True
+                self.is_running = True
                 return
-            
+
         self.is_running = False
         self.pid = None
         self.process = None
-                
+
     def start(self):
         self.check_if_exist()
         if not self.process:
-            self.process = psutil.Popen(shlex.split(self.exec), stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, text=True,  close_fds=True, preexec_fn=os.setpgrp, shell=False)
+            self.process = psutil.Popen(shlex.split(self.exec), stdin=subprocess.PIPE,
+                                        stdout=subprocess.DEVNULL, text=True,  close_fds=True, preexec_fn=os.setpgrp, shell=False)
             while not self.pid:
                 self.pid = self.process.pid
                 print(self.process.pid)
             self.is_running = True
-            
+
     def kill(self):
         self.check_if_exist()
         if self.process:
@@ -63,11 +65,30 @@ class Node:
             self.is_running = False
             self.process = None
             self.pid = None
-            
+
     def info(self):
-        ret_info = {'name':self.name, 
-                'status':self.is_running,
-                'pid':None}
+        ret_info = {'name': self.name,
+                    'status': self.is_running,
+                    'pid': None}
         if self.is_running:
-            ret_info.update({'pid':self.pid})
+            ret_info.update({'pid': self.pid})
         return ret_info
+    
+    def info_for_search(self):
+        ret_info = {'name':self.name, 
+                    'cmd':self.cmd,
+                    'pid':self.pid}
+        return ret_info
+
+
+def search(name_list, search_list):
+    for proc in psutil.process_iter():
+        if len(proc.cmdline()):
+            if(proc.name() in name_list):
+                item = CmdItem
+                item.name = proc.name()
+                item.exec = " ".join(proc.cmdline())
+                item.cmd = item.exec
+                search_list.append(
+                    Node(item=item, process=proc, pid=proc.pid, check_flag=False))
+    return
