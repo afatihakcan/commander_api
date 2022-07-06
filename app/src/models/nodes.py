@@ -97,6 +97,7 @@ def search(name_list, search_list):
                 item.name = proc.name()
                 item.exec = " ".join(proc.cmdline())
                 item.cmd = item.exec
+                item.cwd = "".join(proc.cwd())
                 search_list.append(
                     Node(item=item, process=proc, pid=proc.pid, check_flag=False))
     return
