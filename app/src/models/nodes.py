@@ -82,14 +82,10 @@ class Node:
         return ret_info
     
     def info_for_search(self):
-        try:
-            cwd = self.process.cwd()
-        except psutil.AccessDenied:
-            cwd = "access denied!"
         ret_info = {'name':self.name, 
                     'cmd':self.cmd,
                     'pid':self.pid,
-                    'cwd':cwd}
+                    'cwd':self.cwd}
         return ret_info
 
 
