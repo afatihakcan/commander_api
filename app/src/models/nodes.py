@@ -21,6 +21,7 @@ import os
 import subprocess
 import shlex
 from .cmdList import CmdDb, CmdItem
+from pathlib import Path
 
 
 class Node:
@@ -31,6 +32,7 @@ class Node:
         self.cmd = item.cmd
         self.process = process
         self.pid = pid
+        self.cwd = item.cwd if item.cwd and item.cwd!= '' else Path.home()
         self.db = CmdDb()
         if check_flag:
             self.check_if_exist()
@@ -41,6 +43,10 @@ class Node:
             if proc.as_dict(attrs=['cmdline'])['cmdline'] == shlex.split(self.cmd):
                 self.pid = proc.as_dict(attrs=['pid'])['pid']
                 self.process = psutil.Process(self.pid)
+                try:
+                    self.cwd = proc.cwd()
+                except psutil.AccessDenied:
+                    self.cwd = None
                 self.is_running = True
                 return
 
@@ -52,7 +58,7 @@ class Node:
         self.check_if_exist()
         if not self.process:
             self.process = psutil.Popen(shlex.split(self.exec), stdin=subprocess.PIPE,
-                                        stdout=subprocess.DEVNULL, text=True,  close_fds=True, preexec_fn=os.setpgrp, shell=False)
+                                        stdout=subprocess.DEVNULL, cwd=self.cwd, text=True,  close_fds=True, preexec_fn=os.setpgrp, shell=False)
             while not self.pid:
                 self.pid = self.process.pid
                 print(self.process.pid)
@@ -69,7 +75,8 @@ class Node:
     def info(self):
         ret_info = {'name': self.name,
                     'status': self.is_running,
-                    'pid': None}
+                    'pid': None,
+                    'cwd': self.cwd}
         if self.is_running:
             ret_info.update({'pid': self.pid})
         return ret_info

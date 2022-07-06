@@ -49,6 +49,7 @@ def create_node_list():
         new_item.name = cmd_name
         new_item.exec = CmdList.cmd_list[f'{cmd_name}']['exec']
         new_item.cmd = CmdList.cmd_list[f'{cmd_name}']['cmd']
+        new_item.cwd = CmdList.cmd_list[f'{cmd_name}'].get('cwd')
         NodeList.update({f'{cmd_name}':Node(new_item)})
         
 create_node_list()
@@ -106,28 +107,28 @@ async def node_controller(node:str, action:Union[str,None]=None):
 async def get_list():
     return CmdList.read_cmd()
 
-@router_list.post('/add/')
-async def add_to_list(item:CmdItem):
-    CmdList.add_cmd({f'{item.name}':{'exec':item.exec, 'cmd':item.cmd}})
-    NodeList.update({f'{item.name}':Node(item)})
+# @router_list.post('/add/')
+# async def add_to_list(item:CmdItem):
+#     CmdList.add_cmd({f'{item.name}':{'exec':item.exec, 'cmd':item.cmd}})
+#     NodeList.update({f'{item.name}':Node(item)})
 
-    return {'status':'successful!', 
-            'added':item.dict()}
+#     return {'status':'successful!', 
+#             'added':item.dict()}
     
-@router_list.post('/add_multiple/')
-async def add_to_list_multiple(new_items:List[CmdItem]):
-    for item in new_items:
-        CmdList.add_cmd({f'{item.name}':{'exec':item.exec, 'cmd':item.cmd}})
-        NodeList.update({f'{item.name}':Node(item)})
-    return {'status':'successful!', 
-            'added':new_items.dict()}
+# @router_list.post('/add_multiple/')
+# async def add_to_list_multiple(new_items:List[CmdItem]):
+#     for item in new_items:
+#         CmdList.add_cmd({f'{item.name}':{'exec':item.exec, 'cmd':item.cmd}})
+#         NodeList.update({f'{item.name}':Node(item)})
+#     return {'status':'successful!', 
+#             'added':new_items.dict()}
 
     
 @router_list.post('/update/')
 async def update_list(new_list:List[CmdItem]):
     new_dict = dict()
     for new_item in new_list:
-        new_dict.update({f'{new_item.name}':{'exec':new_item.exec, 'cmd':new_item.cmd}})
+        new_dict.update({f'{new_item.name}':{'exec':new_item.exec, 'cmd':new_item.cmd, 'cwd':new_item.cwd if new_item.cwd!='' else None}})
     
     CmdList.write_all(new_dict)
     

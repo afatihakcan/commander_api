@@ -1,1 +1,1 @@
-{"kcalc": {"exec": "/usr/bin/kcal", "cmd": "/usr/bin/kcalc"}, "todo": {"exec": "/usr/bin/gnome-todo", "cmd": "/usr/bin/gnome-todo"}}
+{"kcalc": {"exec": "/usr/bin/kcalc", "cmd": "/usr/bin/kcalc", "cwd": null}, "todo": {"exec": "/usr/bin/gnome-todo", "cmd": "/usr/bin/gnome-todo", "cwd": null}, "test.py": {"exec": "python3 test.py", "cmd": "python3 test.py", "cwd": "/home/fatih/WEB/"}}

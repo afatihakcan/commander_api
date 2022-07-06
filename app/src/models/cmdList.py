@@ -18,12 +18,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pydantic import BaseModel
 import json
+from typing import Union
 
 
 class CmdItem(BaseModel):
     name: str
     exec:str
     cmd: str
+    cwd: str = None
     
 class CmdDb:
     def __init__(self):
