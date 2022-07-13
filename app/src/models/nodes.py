@@ -22,6 +22,7 @@ import subprocess
 import shlex
 from .cmdList import CmdDb, CmdItem
 from pathlib import Path
+import signal
 
 
 class Node:
@@ -57,8 +58,11 @@ class Node:
     def start(self):
         self.check_if_exist()
         if not self.process:
-            self.process = psutil.Popen(shlex.split(self.exec), stdin=subprocess.PIPE,
-                                        stdout=subprocess.DEVNULL, cwd=self.cwd, text=True,  close_fds=True, preexec_fn=os.setpgrp, shell=False)
+            # self.process = psutil.Popen(shlex.split(self.exec), stdin=subprocess.PIPE,
+            #                             stdout=subprocess.DEVNULL, cwd=self.cwd, text=True,  close_fds=True, preexec_fn=os.setpgrp, shell=False)
+            self.process = subprocess.Popen(self.exec, stdin=subprocess.PIPE,
+                                        stdout=subprocess.DEVNULL, cwd=self.cwd, text=True,  close_fds=True, preexec_fn=os.setsid, shell=True,  executable="/bin/bash")
+          
             while not self.pid:
                 self.pid = self.process.pid
                 print(self.process.pid)
@@ -67,7 +71,8 @@ class Node:
     def kill(self):
         self.check_if_exist()
         if self.process:
-            self.process.terminate()
+            # self.process.terminate()
+            os.killpg(os.getpgid(self.pid), signal.SIGTERM)
             self.is_running = False
             self.process = None
             self.pid = None

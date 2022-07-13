@@ -94,7 +94,8 @@ async def node_controller(node:str, action:Union[str,None]=None):
             ret = cmd_info()
             ret.update({'response':postfix})
             return ret
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print(e)
         cmd_info = getattr(NodeList[f'{node}'], 'info')
         ret = cmd_info()
         ret.update({'response':'Not Found!'})
